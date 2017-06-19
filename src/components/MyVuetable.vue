@@ -15,7 +15,19 @@ export default {
   data () {
     return {
       fields: [
-        'name', 'email', 'birthdate', 'address.line1', 'address.line2', 'address.zipcode'
+        'name', 'email', 'birthdate',
+        {
+          name:'address.line1',
+          title: 'Address 1'
+        },
+        {
+          name: 'address.line2',
+          title: 'Address 2'
+        },
+        {
+          name: 'address.zipcode',
+          title: 'Zipcode'
+        }
       ]
     }
   }
