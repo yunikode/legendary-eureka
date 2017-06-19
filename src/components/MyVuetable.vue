@@ -14,8 +14,11 @@
     ref="vuetable"
     api-url="https://vuetable.ratiw.net/api/users"
     :fields="fields"
+    :sort-order="sortOrder"
     pagination-path=""
     :per-page="20"
+    :multi-sort="true"
+    multi-sort-key="ctrl"
     @vuetable:pagination-data="onPaginationData"
   ></vuetable>
   <div class="vuetable-pagination ui basic segment grid">
@@ -45,35 +48,52 @@ export default {
   },
   data () {
     return {
+      sortOrder: [
+        {
+          field: 'email',
+          sortField: 'email',
+          direction: 'asc'
+        }
+      ],
       fields: [
         {
-          name: 'name'
+          name: 'name',
+          sortField: 'name'
         },
         {
-          name: 'email'
+          name: 'email',
+          sortField: 'email'
+        },
+        {
+          name: 'age',
+          sortField: 'birthdate',
+          dataClass: 'center aligned'
         },
         {
           name: 'birthdate',
+          sortField: 'birthdate',
           titleClasss: 'center aligned',
           dataClass: 'center aligned',
           callback: 'formatDate|DD-MM-YYYY'
         },
         {
           name: 'nickname',
+          sortField: 'nickname',
           callback: 'allcap'
         },
         {
           name: 'gender',
+          sortField: 'gender',
           titleClasss: 'center aligned',
           dataClass: 'center aligned',
           callback: 'genderLabel'
         },
         {
           name: 'salary',
+          sortField: 'salary',
           titleClasss: 'center aligned',
           dataClass: 'right aligned',
-          callback: 'formatNumber',
-          visible: false
+          callback: 'formatNumber'
         }
       ]
     }
