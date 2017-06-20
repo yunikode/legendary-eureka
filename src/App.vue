@@ -7,7 +7,27 @@
         :sort-order="sortOrder"
         :append-params="moreParams"
         detail-row-component="my-detail-row"
-      ></my-vuetable>
+      >
+      <template slot="actions" scope="props">
+        <div class="custom-actions">
+          <button
+            class="ui icon button"
+            @click="onAction('view-item', props.rowData, props.rowIndex)">
+            <i class="zoom icon"></i>
+          </button>
+          <button
+            class="ui icon button"
+            @click="onAction('edit-item', props.rowData, props.rowIndex)">
+            <i class="edit icon"></i>
+          </button>
+          <button
+            class="ui icon button"
+            @click="onAction('delete-item', props.rowData, props.rowIndex)">
+            <i class="delete icon"></i>
+          </button>
+        </div>
+      </template>
+    </my-vuetable>
     </div>
   </div>
 </template>

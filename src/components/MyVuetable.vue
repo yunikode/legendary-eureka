@@ -1,49 +1,3 @@
-<template>
-<div class="ui container">
-
-  <filter-bar></filter-bar>
-  <vuetable
-    ref="vuetable"
-    :api-url="apiUrl"
-    :fields="fields"
-    :sort-order="sortOrder"
-    pagination-path=""
-    :per-page="20"
-    :multi-sort="true"
-    multi-sort-key="ctrl"
-    detail-row-component="detailRowComponent"
-    :append-params="appendParams"
-    @vuetable:pagination-data="onPaginationData"
-    @vuetable:cell-clicked="onCellClicked"
-  >
-    <template slot="actions" scope="props">
-      <div class="custom-actions">
-        <button
-          class="ui icon button"
-          @click="onAction('view-item', props.rowData, props.rowIndex)">
-          <i class="zoom icon"></i>
-        </button>
-        <button
-          class="ui icon button"
-          @click="onAction('edit-item', props.rowData, props.rowIndex)">
-          <i class="edit icon"></i>
-        </button>
-        <button
-          class="ui icon button"
-          @click="onAction('delete-item', props.rowData, props.rowIndex)">
-          <i class="delete icon"></i></button>
-      </div>
-    </template>
-  </vuetable>
-  <div class="vuetable-pagination ui basic segment grid">
-    <vuetable-pagination-info ref="paginationInfo">
-    </vuetable-pagination-info>
-    <vuetable-pagination ref="pagination" @vuetable-pagination:change-page="onChangePage">
-    </vuetable-pagination>
-  </div>
-</div>
-</template>
-
 <script>
 import Vue from 'vue'
 import VueEvents from 'vue-events'
@@ -135,11 +89,62 @@ export default {
     onFilterReset () {
       delete this.appendParams.filter
       Vue.nextTick( () => this.$refs.vuetable.refresh() )
+    },
+    renderVuetable(h) {
+      return h (
+        'vuetable',
+        {
+          ref: 'vuetable',
+          props: {
+            apiUrl: this.apiUrl,
+            fields: this.fields,
+            paginationPath: "",
+            perPage: 10,
+            multiSort: true,
+            sortOrder: this.sortOrder,
+            appendParams: this.appendParams,
+            detailRowComponent: this.detailRowComponent,
+          },
+          on: {
+            'vuetable:cell-clicked': this.onCellClicked,
+            'vuetable:pagination-data': this.onPaginationData
+          },
+          scopedSlots: this.$vnode.data.scopedSlots
+        }
+      )
+    },
+    renderPagination (h) {
+      return h(
+        'div',
+        { class: {'vuetable-pagination': true, 'ui': true, 'basic': true, 'segment': true, 'grid': true}},
+        [
+          h('vuetable-pagination-info', { ref: 'paginationInfo'}),
+          h('vuetable-pagination', {
+            ref: 'pagination',
+            on: {
+              'vuetable-pagination:change-page': this.onChangePage
+            }
+          })
+        ]
+      )
     }
   },
   mounted () {
     this.$events.$on('filter-set', eData => this.onFilterSet(eData))
     this.$events.$on('filter-reset', eData => this.onFilterReset())
+  },
+  render (h) {
+    return h (
+      'div',
+      {
+        class: { ui: true, container: true}
+      },
+      [
+        h('filter-bar'),
+        this.renderVuetable(h),
+        this.renderPagination(h)
+      ]
+    )
   }
 }
 </script>
