@@ -4,15 +4,15 @@
   <filter-bar></filter-bar>
   <vuetable
     ref="vuetable"
-    api-url="https://vuetable.ratiw.net/api/users"
+    :api-url="apiUrl"
     :fields="fields"
     :sort-order="sortOrder"
     pagination-path=""
     :per-page="20"
     :multi-sort="true"
     multi-sort-key="ctrl"
-    detail-row-component="my-detail-row"
-    :append-params="moreParams"
+    detail-row-component="detailRowComponent"
+    :append-params="appendParams"
     @vuetable:pagination-data="onPaginationData"
     @vuetable:cell-clicked="onCellClicked"
   >
@@ -62,23 +62,39 @@ Vue.component('my-detail-row', DetailRow)
 Vue.component('filter-bar', FilterBar)
 
 export default {
+  name: 'my-vuetable',
   components: {
     Vuetable,
     VuetablePagination,
     VuetablePaginationInfo
   },
-  data() {
-    return {
-      sortOrder: [{
-        field: 'email',
-        sortField: 'email',
-        direction: 'asc'
-      }],
-      moreParams: {
-
-      },
-      fields: FieldDefs
+  props: {
+    apiUrl: {
+      type: String,
+      required: true
+    },
+    fields: {
+      type: Array,
+      required: true
+    },
+    sortOrder: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    appendParams: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
+    detailRowComponent: {
+      type: String
     }
+  },
+  data() {
+    return {}
   },
   methods: {
     allcap(val) {
@@ -113,13 +129,11 @@ export default {
       this.$refs.vuetable.toggleDetailRow(data.id)
     },
     onFilterSet (filter) {
-      this.moreParams = {
-        'filter': filter
-      }
+      this.appendParams.filter = filterText
       Vue.nextTick( () => this.$refs.vuetable.refresh() )
     },
     onFilterReset () {
-      this.moreParams = {}
+      delete this.appendParams.filter
       Vue.nextTick( () => this.$refs.vuetable.refresh() )
     }
   },
