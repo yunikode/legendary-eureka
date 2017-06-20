@@ -12,23 +12,24 @@
     :multi-sort="true"
     multi-sort-key="ctrl"
     detail-row-component="my-detail-row"
+    :append-params="moreParams"
     @vuetable:pagination-data="onPaginationData"
     @vuetable:cell-clicked="onCellClicked"
   >
     <template slot="actions" scope="props">
       <div class="custom-actions">
         <button
-          class="ui basic button"
+          class="ui icon button"
           @click="onAction('view-item', props.rowData, props.rowIndex)">
           <i class="zoom icon"></i>
         </button>
         <button
-          class="ui basic button"
+          class="ui icon button"
           @click="onAction('edit-item', props.rowData, props.rowIndex)">
           <i class="edit icon"></i>
         </button>
         <button
-          class="ui basic button"
+          class="ui icon button"
           @click="onAction('delete-item', props.rowData, props.rowIndex)">
           <i class="delete icon"></i></button>
       </div>
@@ -45,6 +46,7 @@
 
 <script>
 import Vue from 'vue'
+import VueEvents from 'vue-events'
 import Vuetable from 'vuetable-2/src/components/Vuetable'
 import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
 import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo'
@@ -52,6 +54,8 @@ import accounting from 'accounting'
 import moment from 'moment'
 import DetailRow from './DetailRow'
 import FilterBar from './FilterBar'
+
+Vue.use(VueEvents)
 
 Vue.component('my-detail-row', DetailRow)
 Vue.component('filter-bar', FilterBar)
@@ -69,6 +73,9 @@ export default {
         sortField: 'email',
         direction: 'asc'
       }],
+      moreParams: {
+
+      },
       fields: [{
           name: '__checkbox',
           titleClass: 'center aligned',
@@ -153,7 +160,21 @@ export default {
     onCellClicked (data, field, e) {
       console.log('cellClicked: ', field.name)
       this.$refs.vuetable.toggleDetailRow(data.id)
+    },
+    onFilterSet (filter) {
+      this.moreParams = {
+        'filter': filter
+      }
+      Vue.nextTick( () => this.$refs.vuetable.refresh() )
+    },
+    onFilterReset () {
+      this.moreParams = {}
+      Vue.nextTick( () => this.$refs.vuetable.refresh() )
     }
+  },
+  mounted () {
+    this.$events.$on('filter-set', eData => this.onFilterSet(eData))
+    this.$events.$on('filter-reset', eData => this.onFilterReset())
   }
 }
 </script>
